@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "870543243375",
+    "project_id": "movie-buddy-5f1ed",
+    "storage_bucket": "movie-buddy-5f1ed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870543243375:android:dedb473f7aeec18134359a",
+        "android_client_info": {
+          "package_name": "com.cosmoking.moviebuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALrolGEYEbyvwiaCNj00MCzYZl34kf6NA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
