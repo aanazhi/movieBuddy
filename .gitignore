@@ -31,15 +31,15 @@ migrate_working_dir/
 .pub/
 /build/
 
-project/lib/firebase_options.dart
+lib/firebase_options.dart
 
-project/firebase.json
+firebase.json
 
-project/moviebuddy.iml
+moviebuddy.iml
 
-project/.flutter-plugins
+.flutter-plugins
 
-project/.flutter-plugins-dependencies
+.flutter-plugins-dependencies
 
 # Symbolication related
 app.*.symbols
