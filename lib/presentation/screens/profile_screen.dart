@@ -13,12 +13,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+        //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+          // backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
           leading: InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -32,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         body: ListView(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 60,
             ),
             Row(
@@ -47,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Color.fromRGBO(207, 220, 253, 1),
+                            color: colorsStyle.secondary,
                             width: 3,
                           ),
                         ),
@@ -68,12 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: Text(
                         'admin@gmail.com',
-                        style: TextStyle(
-                          fontFamily: 'Aldrich',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          color: const Color.fromRGBO(207, 220, 253, 1),
-                        ),
+                        style: textStyle.bodySmall,
                       ),
                     ),
                   ],
@@ -85,12 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: Text(
                     'Aanazhi',
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 40,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.bodyLarge,
                   ),
                 ),
                 Padding(
@@ -109,13 +102,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 109,
             ),
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 22),
+                  padding: const EdgeInsets.only(
+                    left: 22,
+                  ),
                   child: Switch(
                     value: _isSwitchedFirst,
                     onChanged: (value) {
@@ -123,32 +118,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _isSwitchedFirst = value;
                       });
                     },
-                    activeTrackColor: Color.fromRGBO(74, 125, 255, 1),
-                    activeColor: Color.fromRGBO(207, 220, 253, 1),
-                    inactiveThumbColor: Color.fromRGBO(207, 220, 253, 1),
-                    inactiveTrackColor: Color.fromRGBO(50, 50, 50, 1),
+                    activeTrackColor: colorsStyle.surface,
+                    activeColor: colorsStyle.secondary,
+                    inactiveThumbColor: colorsStyle.secondary,
+                    inactiveTrackColor: colorsStyle.onPrimary,
                   ),
                 ),
                 Container(
                   height: 63,
                   width: 270,
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 13,
                   ),
                   child: Text(
                     'Присылайте мне уведомления, когда меня приглашают в комнату',
                     maxLines: 3,
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.bodyMedium,
                   ),
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Row(
@@ -162,32 +152,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _isSwitchedSecond = value;
                       });
                     },
-                    activeTrackColor: Color.fromRGBO(74, 125, 255, 1),
-                    activeColor: Color.fromRGBO(207, 220, 253, 1),
-                    inactiveThumbColor: Color.fromRGBO(207, 220, 253, 1),
-                    inactiveTrackColor: Color.fromRGBO(50, 50, 50, 1),
+                    activeTrackColor: colorsStyle.surface,
+                    activeColor: colorsStyle.secondary,
+                    inactiveThumbColor: colorsStyle.secondary,
+                    inactiveTrackColor: colorsStyle.onPrimary,
                   ),
                 ),
                 Container(
                   height: 63,
                   width: 270,
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 13,
                   ),
                   child: Text(
                     'Я согласен получать электронные письма о новых функциях',
                     maxLines: 3,
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.bodyMedium,
                   ),
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 100,
             ),
             InkWell(
@@ -208,19 +193,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     'Изменить пароль',
                     maxLines: 3,
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                      decoration: TextDecoration.underline,
-                      decorationColor: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.labelMedium,
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             InkWell(
@@ -241,14 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     'Выйти',
                     maxLines: 3,
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                      decoration: TextDecoration.underline,
-                      decorationColor: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.labelMedium,
                   ),
                 ],
               ),

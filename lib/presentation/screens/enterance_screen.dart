@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:moviebuddy/presentation/screens/home_screen.dart';
 import 'package:moviebuddy/presentation/screens/registration_screen.dart';
-
-import '../../main.dart';
 
 class EnteranceScreen extends StatefulWidget {
   const EnteranceScreen({super.key});
@@ -12,58 +10,14 @@ class EnteranceScreen extends StatefulWidget {
 }
 
 class _EnteranceScreenState extends State<EnteranceScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _signIn() async {
-    if (emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Ошибка'),
-            content: Text('Пожалуйста, заполните все поля.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('ОК'),
-              ),
-            ],
-          );
-        },
-      );
-      return;
-    }
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+        //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
         centerTitle: true,
         toolbarHeight: 150,
         title: Padding(
@@ -73,31 +27,21 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
             children: [
               Text(
                 "Welcome to",
-                style: TextStyle(
-                  fontFamily: 'Aldrich',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 40,
-                  color: const Color.fromRGBO(207, 220, 253, 1),
-                ),
+                style: textStyle.displayLarge,
               ),
               Text(
                 "MovieBuddy!",
-                style: TextStyle(
-                  fontFamily: 'Aldrich',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 40,
-                  color: const Color.fromRGBO(207, 220, 253, 1),
-                ),
+                style: textStyle.displayLarge,
               ),
             ],
           ),
         ),
       ),
-      backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+      //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 89,
             ),
             Row(
@@ -105,36 +49,24 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
               children: [
                 Text(
                   "Впервые здесь?",
-                  style: TextStyle(
-                    fontFamily: 'Aldrich',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 15,
-                    color: const Color.fromRGBO(207, 220, 253, 1),
-                  ),
+                  style: textStyle.bodyMedium,
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RegistationScreen()),
+                          builder: (context) => const RegistationScreen()),
                     );
                   },
                   child: Text(
                     "Зарегистрироваться!",
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white,
-                    ),
+                    style: textStyle.bodyMedium,
                   ),
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 59,
             ),
             Column(
@@ -144,88 +76,63 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                   padding: const EdgeInsets.only(right: 132.0),
                   child: Text(
                     "Введите ваш email:",
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.bodyLarge,
                   ),
                 ),
-                SizedBox(height: 16),
-                Container(
+                const SizedBox(height: 16),
+                SizedBox(
                   width: 325,
                   height: 50,
                   child: TextFormField(
-                    controller: emailController,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: colorsStyle.tertiary,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Color.fromRGBO(207, 220, 253, 1),
-                    ),
-                    validator: (value) {},
+                    style: textStyle.bodyMedium,
+                    validator: (value) {
+                      return null;
+                    },
                   ),
                 ),
-                SizedBox(height: 21),
+                const SizedBox(height: 21),
                 Padding(
                   padding: const EdgeInsets.only(right: 32.0),
                   child: Text(
                     "Пароль:",
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.bodyLarge,
                   ),
                 ),
-                SizedBox(height: 12),
-                Container(
+                const SizedBox(height: 12),
+                SizedBox(
                   width: 325,
                   height: 50,
                   child: TextFormField(
-                    controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: colorsStyle.tertiary,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Color.fromRGBO(207, 220, 253, 1),
-                    ),
-                    validator: (value) {},
+                    style: textStyle.bodyMedium,
+                    validator: (value) {
+                      return null;
+                    },
                   ),
                 ),
-                SizedBox(height: 11),
+                const SizedBox(height: 11),
                 TextButton(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 32),
                     child: Text(
                       "Забыли пароль?",
-                      style: TextStyle(
-                        fontFamily: 'Aldrich',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 13,
-                        color: const Color.fromARGB(255, 240, 244, 255),
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white,
-                      ),
+                      style: textStyle.bodySmall,
                     ),
                   ),
                   onPressed: () {},
@@ -233,7 +140,12 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
               ],
             ),
             IconButton(
-              onPressed: _signIn,
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HomeScreen()));
+              },
               icon: SizedBox(
                 width: 50,
                 height: 50,

@@ -7,89 +7,86 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBurCustom(
+        appBar: const AppBurCustom(
           title: 'MovieBuddy',
         ),
         floatingActionButton: Padding(
           padding: EdgeInsets.only(
             right: MediaQuery.of(context).size.width / 2 - 150,
           ),
-          child: Container(
+          child: SizedBox(
             height: 63,
             width: 262,
             child: FloatingActionButton(
-              backgroundColor: Color.fromRGBO(74, 125, 255, 1),
+              backgroundColor: colorsStyle.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
                 'Создай комнату!',
-                style: TextStyle(
-                  fontFamily: 'Aldrich',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 24,
-                  color: const Color.fromRGBO(207, 220, 253, 1),
-                ),
+                style: textStyle.displayMedium,
               ),
               onPressed: () {},
             ),
           ),
         ),
-        backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+        // backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
         body: ListView(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
-              color: Color.fromRGBO(207, 220, 253, 1),
+              color: colorsStyle.secondary,
               height: 1,
               width: double.infinity,
             ),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.fromLTRB(16, 0, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
                   width: 350,
                   height: 50,
                   child: TextField(
-                    cursorColor: Color.fromRGBO(207, 220, 253, 1),
+                    cursorColor: colorsStyle.secondary,
                     textAlign: TextAlign.left,
+                    style: textStyle.displaySmall,
                     decoration: InputDecoration(
                       hintText: 'Поиск',
-                      hintStyle: TextStyle(
-                        fontFamily: 'Aldrich',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20,
-                        color: const Color.fromRGBO(207, 220, 253, 1),
-                      ),
+                      hintStyle: textStyle.displaySmall,
                       filled: true,
-                      fillColor: Color.fromRGBO(50, 50, 50, 1),
+                      fillColor: colorsStyle.onPrimary,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                         borderSide: BorderSide(
-                          color: Color.fromRGBO(207, 220, 253, 1),
+                          color: colorsStyle.secondary,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                         borderSide: BorderSide(
-                          color: Colors.transparent,
+                          color: colorsStyle.surfaceBright,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                         borderSide: BorderSide(
-                          color: Color.fromRGBO(207, 220, 253, 1),
+                          color: colorsStyle.secondary,
                         ),
                       ),
-                      contentPadding: EdgeInsets.only(bottom: 5, left: 25),
+                      contentPadding: const EdgeInsets.only(
+                        bottom: 5,
+                        left: 25,
+                      ),
                     ),
                   ),
                 ),
@@ -107,29 +104,24 @@ class MainScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                padding: EdgeInsets.only(left: 16, top: 43),
+                padding: const EdgeInsets.only(left: 16, top: 43),
                 child: Text(
                   'Лучшие фильмы',
-                  style: TextStyle(
-                    fontFamily: 'Aldrich',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 20,
-                    color: const Color.fromRGBO(207, 220, 253, 1),
-                  ),
+                  style: textStyle.displaySmall,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
-            Container(
+            SizedBox(
               height: 190,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
-                    child: Container(
+                    child: SizedBox(
                       height: 190,
                       width: 130,
                       child: Image.asset(
@@ -140,7 +132,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
-                    child: Container(
+                    child: SizedBox(
                       height: 190,
                       width: 130,
                       child: Image.asset(
@@ -151,7 +143,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
-                    child: Container(
+                    child: SizedBox(
                       height: 190,
                       width: 130,
                       child: Image.asset(
@@ -166,35 +158,30 @@ class MainScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                padding: EdgeInsets.only(left: 16, top: 43),
+                padding: const EdgeInsets.only(left: 16, top: 43),
                 child: Text(
                   'Лучшие сериалы',
-                  style: TextStyle(
-                    fontFamily: 'Aldrich',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 20,
-                    color: const Color.fromRGBO(207, 220, 253, 1),
-                  ),
+                  style: textStyle.displaySmall,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             Stack(
               children: [
-                Container(
+                SizedBox(
                   height: 200,
                   child: ShaderMask(
                     shaderCallback: (Rect bounds) {
                       return LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: [0, 0.5, 1],
+                        stops: const [0, 0.5, 1],
                         colors: [
-                          Color.fromRGBO(34, 34, 34, 0.5),
-                          Color.fromRGBO(34, 34, 34, 0.8),
-                          Color.fromRGBO(34, 34, 34, 0.8),
+                          colorsStyle.tertiaryFixed,
+                          colorsStyle.onTertiaryFixed,
+                          colorsStyle.onTertiaryFixed,
                         ],
                       ).createShader(bounds);
                     },
@@ -203,8 +190,10 @@ class MainScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Container(
+                          padding: const EdgeInsets.only(
+                            left: 20,
+                          ),
+                          child: SizedBox(
                             height: 190,
                             width: 130,
                             child: Image.asset(
@@ -215,7 +204,7 @@ class MainScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
-                          child: Container(
+                          child: SizedBox(
                             height: 190,
                             width: 130,
                             child: Image.asset(
@@ -225,8 +214,8 @@ class MainScreen extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Container(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: SizedBox(
                             height: 190,
                             width: 130,
                             child: Image.asset(

@@ -7,11 +7,14 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return AppBar(
-      backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+      // backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
       title: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Row(
@@ -19,12 +22,7 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontFamily: 'Aldrich',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 40,
-                  color: const Color.fromRGBO(207, 220, 253, 1),
-                ),
+                style: textStyle.displayLarge,
               ),
               Container(
                 width: 45,
@@ -32,7 +30,7 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Color.fromRGBO(207, 220, 253, 1),
+                    color: colorsStyle.secondary,
                     width: 3,
                   ),
                 ),
@@ -41,7 +39,7 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProfileScreen()));
+                            builder: (context) => const ProfileScreen()));
                   },
                   child: ClipOval(
                     child: Image.asset(
@@ -61,5 +59,5 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

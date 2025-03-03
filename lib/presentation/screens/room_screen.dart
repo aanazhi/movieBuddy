@@ -2,37 +2,45 @@ import 'package:flutter/material.dart';
 
 import '../widgets/app_bar.dart';
 
-class RoomScreen extends StatelessWidget {
+class RoomScreen extends StatefulWidget {
   const RoomScreen({super.key});
 
   @override
+  State<RoomScreen> createState() => _RoomScreenState();
+}
+
+class _RoomScreenState extends State<RoomScreen> {
+  @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBurCustom(
+        appBar: const AppBurCustom(
           title: 'Room',
         ),
-        backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+        backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
         body: ListView(
           shrinkWrap: true,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
-              color: Color.fromRGBO(207, 220, 253, 1),
+              color: colorsStyle.secondary,
               height: 1,
               width: double.infinity,
             ),
             Center(
               child: Padding(
-                padding: EdgeInsets.only(top: 191),
+                padding: const EdgeInsets.only(top: 191),
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(323, 90),
-                    backgroundColor: Color.fromRGBO(74, 125, 255, 1),
+                    minimumSize: const Size(323, 90),
+                    backgroundColor: colorsStyle.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -44,19 +52,16 @@ class RoomScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 20),
                         child: Text(
                           'Создать новую комнату',
-                          style: TextStyle(
-                            fontFamily: 'Aldrich',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 25,
-                            color: const Color.fromRGBO(207, 220, 253, 1),
-                          ),
+                          style: textStyle.displayMedium,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 300),
+                        padding: const EdgeInsets.only(
+                          left: 300,
+                        ),
                         child: Image.asset('assets/icons/room_icon_plus.png'),
                       )
                     ],
@@ -66,16 +71,21 @@ class RoomScreen extends StatelessWidget {
             ),
             Center(
               child: Padding(
-                padding: EdgeInsets.only(top: 30),
+                padding: const EdgeInsets.only(
+                  top: 30,
+                ),
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(323, 90),
-                    backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+                    minimumSize: const Size(
+                      323,
+                      90,
+                    ),
+                    backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                         side: BorderSide(
-                          color: Colors.white,
+                          color: colorsStyle.secondary,
                         )),
                   ),
                   child: Column(
@@ -85,19 +95,16 @@ class RoomScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 100),
                         child: Text(
                           'Присоединиться',
-                          style: TextStyle(
-                            fontFamily: 'Aldrich',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 25,
-                            color: const Color.fromRGBO(207, 220, 253, 1),
-                          ),
+                          style: textStyle.displayMedium,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 300),
+                        padding: const EdgeInsets.only(
+                          left: 300,
+                        ),
                         child: Image.asset('assets/icons/arrow_2.png'),
                       )
                     ],

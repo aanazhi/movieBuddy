@@ -3,39 +3,47 @@ import 'package:flutter/material.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/gradient_scrollabel_list.dart';
 
-class Playlists extends StatelessWidget {
+class Playlists extends StatefulWidget {
   const Playlists({super.key});
 
   @override
+  State<Playlists> createState() => _PlaylistsState();
+}
+
+class _PlaylistsState extends State<Playlists> {
+  @override
   Widget build(BuildContext context) {
+    final colorsStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBurCustom(
+        appBar: const AppBurCustom(
           title: 'Playlists',
         ),
-        backgroundColor: Color.fromRGBO(34, 34, 34, 1),
+        // backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
         body: ListView(
           shrinkWrap: true,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
-              color: Color.fromRGBO(207, 220, 253, 1),
+              color: colorsStyle.secondary,
               height: 1,
               width: double.infinity,
             ),
-            SizedBox(
+            const SizedBox(
               height: 46,
             ),
-            GradientScrollabelList(
+            const GradientScrollabelList(
               title: 'Любимое',
               imagePath1: 'assets/images/33.jpg',
               imagePath2: 'assets/images/15.jpg',
               imagePath3: 'assets/images/predlozh.jpg',
             ),
-            SizedBox(
+            const SizedBox(
               height: 66,
             ),
             Row(
@@ -47,12 +55,7 @@ class Playlists extends StatelessWidget {
                   ),
                   child: Text(
                     'Твои личные плейлисты',
-                    style: TextStyle(
-                      fontFamily: 'Aldrich',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 25,
-                      color: const Color.fromRGBO(207, 220, 253, 1),
-                    ),
+                    style: textStyle.displayMedium,
                   ),
                 ),
                 InkWell(
@@ -65,7 +68,7 @@ class Playlists extends StatelessWidget {
                 ),
               ],
             ),
-            GradientScrollabelList(
+            const GradientScrollabelList(
               title: 'Фильмы для слез',
               imagePath1: 'assets/images/88.jpg',
               imagePath2: 'assets/images/99.jpg',
