@@ -1,23 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moviebuddy/data/user_repository/user_repository.dart';
+import 'package:moviebuddy/domain/login_use_case/login_register_use_case.dart';
+import 'package:moviebuddy/domain/user_entity/user_entity.dart';
 import 'package:moviebuddy/presentation/screens/enterance_screen.dart';
 import 'package:moviebuddy/presentation/screens/home_screen.dart';
+import 'package:moviebuddy/provider/providers.dart';
+import 'package:uuid/uuid.dart';
 
-class RegistationScreen extends StatefulWidget {
-  const RegistationScreen({super.key});
+class RegistationScreen extends ConsumerWidget {
+  final _emailController = TextEditingController();
+  final _nicknameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordTwoController = TextEditingController();
+  RegistationScreen({super.key});
 
   @override
-  State<RegistationScreen> createState() => _RegistationScreenState();
-}
-
-class _RegistationScreenState extends State<RegistationScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
+    final loginUseCase = LoginRegisterUseCase(UserRepository());
+    final saveUsersOnRegProvider = ref.watch(saveUserProvider);
 
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
+        backgroundColor: colorsStyle.primary,
         centerTitle: true,
         toolbarHeight: 150,
         title: Padding(
@@ -37,7 +45,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
           ),
         ),
       ),
-      //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
+      backgroundColor: colorsStyle.primary,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -55,7 +63,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EnteranceScreen()),
+                          builder: (context) => EnteranceScreen()),
                     );
                   },
                   icon: Image.asset(
@@ -85,6 +93,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: colorsStyle.shadow,
@@ -93,10 +102,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodySmall,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.bodyMedium,
                   ),
                 ),
                 const SizedBox(
@@ -118,6 +124,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _nicknameController,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: colorsStyle.shadow,
@@ -126,10 +133,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodySmall,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.bodyMedium,
                   ),
                 ),
                 const SizedBox(
@@ -151,6 +155,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       filled: true,
@@ -160,10 +165,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodySmall,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.bodyMedium,
                   ),
                 ),
                 const SizedBox(
@@ -185,6 +187,7 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _passwordTwoController,
                     obscureText: true,
                     decoration: InputDecoration(
                       filled: true,
@@ -194,23 +197,91 @@ class _RegistationScreenState extends State<RegistationScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodySmall,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.bodyMedium,
                   ),
                 ),
                 const SizedBox(
                   height: 21,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
+                  onPressed: () async {
+                    final email = _emailController.text;
+                    final nickname = _nicknameController.text;
+                    final password = _passwordController.text;
+                    final passwordTwo = _passwordTwoController.text;
+
+                    if (password != passwordTwo) {
+                      SnackBar(
+                        backgroundColor: colorsStyle.onPrimary,
+                        content: Text(
+                          'Пароли не соответсвуют',
+                          style: textStyle.bodyMedium,
+                        ),
+                      );
+                    }
+                    try {
+                      await loginUseCase.reg(email, password);
+
+                      const uuid = Uuid();
+                      final id = uuid.v4();
+                      final user = UserEntity(
+                        id: id,
+                        email: email,
+                        nickname: nickname,
+                        movieCollections: [],
+                      );
+
+                      await saveUsersOnRegProvider.call(user);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
+                    } on FirebaseAuthException catch (error) {
+                      if (error.code == 'invalid-email') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: colorsStyle.onPrimary,
+                            content: Text(
+                              'Некорректный email',
+                              style: textStyle.bodyMedium,
+                            ),
+                          ),
+                        );
+                      } else if (error.code == 'email-already-in-use') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: colorsStyle.onPrimary,
+                            content: Text(
+                              'Пользователь с данным email уже существует',
+                              style: textStyle.bodyMedium,
+                            ),
+                          ),
+                        );
+                      } else if (error.code == 'weak-password') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: colorsStyle.onPrimary,
+                            content: Text(
+                              'Ненадежный пароль',
+                              style: textStyle.bodyMedium,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: colorsStyle.onPrimary,
+                            content: Text(
+                              'Ошибка входа',
+                              style: textStyle.bodyMedium,
+                            ),
+                          ),
+                        );
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(

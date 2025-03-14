@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moviebuddy/presentation/screens/profile_screen.dart';
+import 'package:moviebuddy/provider/providers.dart';
 
-class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
+class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   const AppBurCustom({super.key, required this.title});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
+    final localEmailDataSource = ref.watch(userEmailLocalDataSourceProvider);
+    final localNicknameDataSource =
+        ref.watch(userNicknameLocalDataSourceProvider);
 
     return AppBar(
-      // backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
+      backgroundColor: colorsStyle.primary,
       title: Column(
         children: [
           const SizedBox(
@@ -35,11 +40,19 @@ class AppBurCustom extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    final userEmail = await localEmailDataSource.getUserEmail();
+                    final userNickname =
+                        await localNicknameDataSource.getUserNickname();
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileScreen()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(
+                          nickname: userNickname,
+                          email: userEmail,
+                        ),
+                      ),
+                    );
                   },
                   child: ClipOval(
                     child: Image.asset(

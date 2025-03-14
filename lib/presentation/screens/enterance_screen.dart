@@ -1,23 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moviebuddy/presentation/screens/home_screen.dart';
 import 'package:moviebuddy/presentation/screens/registration_screen.dart';
 
-class EnteranceScreen extends StatefulWidget {
-  const EnteranceScreen({super.key});
+import '../../data/user_repository/user_repository.dart';
+import '../../domain/login_use_case/login_register_use_case.dart';
+
+class EnteranceScreen extends ConsumerWidget {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  EnteranceScreen({super.key});
 
   @override
-  State<EnteranceScreen> createState() => _EnteranceScreenState();
-}
-
-class _EnteranceScreenState extends State<EnteranceScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
+    final loginUseCase = LoginRegisterUseCase(UserRepository());
 
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
+        backgroundColor: colorsStyle.primary,
         centerTitle: true,
         toolbarHeight: 150,
         title: Padding(
@@ -37,7 +41,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
           ),
         ),
       ),
-      //backgroundColor: const Color.fromRGBO(34, 34, 34, 1),
+      backgroundColor: colorsStyle.primary,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -56,7 +60,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const RegistationScreen()),
+                          builder: (context) => RegistationScreen()),
                     );
                   },
                   child: Text(
@@ -84,6 +88,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: colorsStyle.tertiary,
@@ -92,10 +97,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodyMedium,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.labelLarge,
                   ),
                 ),
                 const SizedBox(height: 21),
@@ -111,6 +113,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                   width: 325,
                   height: 50,
                   child: TextFormField(
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       filled: true,
@@ -120,10 +123,7 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: textStyle.bodyMedium,
-                    validator: (value) {
-                      return null;
-                    },
+                    style: textStyle.labelLarge,
                   ),
                 ),
                 const SizedBox(height: 11),
@@ -140,11 +140,60 @@ class _EnteranceScreenState extends State<EnteranceScreen> {
               ],
             ),
             IconButton(
-              onPressed: () {
-                Navigator.pushReplacement(
+              onPressed: () async {
+                final email = _emailController.text;
+                final password = _passwordController.text;
+                try {
+                  final result = await loginUseCase.execute(email, password);
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const HomeScreen()));
+                      builder: (context) => const HomeScreen(),
+                    ),
+                  );
+                } on FirebaseAuthException catch (error) {
+                  if (error.code == 'user-not-found') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: colorsStyle.onPrimary,
+                        content: Text(
+                          'Пользователь не найден',
+                          style: textStyle.bodyMedium,
+                        ),
+                      ),
+                    );
+                  } else if (error.code == 'invalid-email') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: colorsStyle.onPrimary,
+                        content: Text(
+                          'Неккоректный email',
+                          style: textStyle.bodyMedium,
+                        ),
+                      ),
+                    );
+                  } else if (error.code == 'wrong-password') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: colorsStyle.onPrimary,
+                        content: Text(
+                          'Неправильный пароль',
+                          style: textStyle.bodyMedium,
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: colorsStyle.onPrimary,
+                        content: Text(
+                          'Ошибка входа',
+                          style: textStyle.bodyMedium,
+                        ),
+                      ),
+                    );
+                  }
+                }
               },
               icon: SizedBox(
                 width: 50,

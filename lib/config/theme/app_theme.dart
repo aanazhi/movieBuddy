@@ -45,16 +45,22 @@ class AppTheme {
       labelMedium: TextStyle(
         fontFamily: 'Aldrich',
         fontWeight: FontWeight.w400,
-        fontSize: 15,
+        fontSize: 20,
         color: AppColors.whiteColor,
         decoration: TextDecoration.underline,
         decorationColor: AppColors.whiteColor,
+      ),
+      labelLarge: TextStyle(
+        fontFamily: 'Aldrich',
+        fontWeight: FontWeight.w400,
+        fontSize: 18,
+        color: AppColors.backgroundColor,
       ),
     ),
     buttonTheme: const ButtonThemeData(
       buttonColor: AppColors.activeTrackColor,
     ),
-    colorScheme: ColorScheme.light(
+    colorScheme: ColorScheme.dark(
       primary: AppColors.backgroundColor,
       secondary: AppColors.whiteColor,
       error: AppColors.colorLightRed,
