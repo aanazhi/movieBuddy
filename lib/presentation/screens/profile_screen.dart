@@ -1,28 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:moviebuddy/presentation/screens/enterance_screen.dart';
+import 'dart:io';
 
-class ProfileScreen extends StatefulWidget {
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moviebuddy/presentation/screens/enterance_screen.dart';
+import 'package:moviebuddy/provider/providers.dart';
+
+class ProfileScreen extends ConsumerWidget {
   final String? nickname;
   final String? email;
 
-  const ProfileScreen({
-    super.key,
-    required this.nickname,
-    required this.email,
-  });
+  const ProfileScreen({super.key, required this.nickname, required this.email});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isSwitchedFirst = false;
-  bool _isSwitchedSecond = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
+
+    final switchState = ref.watch(switchProvider);
+    final switchNotifier = ref.watch(switchProvider.notifier);
+
+    final localPhotoDataSource = ref.watch(userPhotoLocalDataSourceProvider);
 
     return Scaffold(
       backgroundColor: colorsStyle.primary,
@@ -60,13 +58,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: 3,
                         ),
                       ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/cow.jpg',
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.fill,
-                        ),
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final imageState = ref.watch(imageProvider);
+                          final imageNotifierState =
+                              ref.watch(imageProvider.notifier);
+
+                          if (kDebugMode) {
+                            print('imageState  - $imageState');
+                          }
+
+                          return InkWell(
+                            onTap: () async {
+                              await imageNotifierState.pickImage();
+                              await localPhotoDataSource
+                                  .saveUserPhoto(imageState!.path);
+                            },
+                            child: ClipOval(
+                                child: imageState != null
+                                    ? Image.file(
+                                        imageState,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        'assets/images/cow.jpg',
+                                        fit: BoxFit.cover,
+                                      )),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -76,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       top: 19,
                     ),
                     child: Text(
-                      widget.email ?? 'неизвестно',
+                      email ?? 'неизвестно',
                       style: textStyle.bodySmall,
                     ),
                   ),
@@ -88,22 +107,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   bottom: 30,
                 ),
                 child: Text(
-                  widget.nickname ?? 'неизвестно',
+                  nickname ?? 'неизвестно',
                   style: textStyle.bodyLarge,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 15,
-                  bottom: 30,
-                ),
-                child: InkWell(
-                  onTap: () {},
-                  child: Image.asset(
-                    'assets/icons/group.png',
-                    width: 22,
-                    height: 22.05,
-                  ),
                 ),
               ),
             ],
@@ -118,11 +123,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   left: 22,
                 ),
                 child: Switch(
-                  value: _isSwitchedFirst,
+                  value: switchState.isFirstSwitched,
                   onChanged: (value) {
-                    setState(() {
-                      _isSwitchedFirst = value;
-                    });
+                    switchNotifier.toggleFirstSwitch();
                   },
                   activeTrackColor: colorsStyle.surface,
                   activeColor: colorsStyle.secondary,
@@ -152,11 +155,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 22),
                 child: Switch(
-                  value: _isSwitchedSecond,
+                  value: switchState.isSecondSwitched,
                   onChanged: (value) {
-                    setState(() {
-                      _isSwitchedSecond = value;
-                    });
+                    switchNotifier.toggleSeconfSwitch();
                   },
                   activeTrackColor: colorsStyle.surface,
                   activeColor: colorsStyle.secondary,

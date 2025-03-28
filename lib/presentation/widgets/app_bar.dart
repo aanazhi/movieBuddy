@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moviebuddy/presentation/screens/profile_screen.dart';
@@ -11,9 +13,14 @@ class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
+
     final localEmailDataSource = ref.watch(userEmailLocalDataSourceProvider);
+
     final localNicknameDataSource =
         ref.watch(userNicknameLocalDataSourceProvider);
+
+    final localPhotoDataSource = ref.watch(userPhotoLocalDataSourceProvider);
+    final userPhoto = localPhotoDataSource.getUserPhoto();
 
     return AppBar(
       backgroundColor: colorsStyle.primary,
@@ -54,13 +61,30 @@ class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
                       ),
                     );
                   },
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/cow.jpg',
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                    ),
+                  child: FutureBuilder<String?>(
+                    future: userPhoto,
+                    builder: (context, snapshot) {
+                      print('snapshot -  ${snapshot.data}');
+                      if (snapshot.data != null && snapshot.hasData) {
+                        return ClipOval(
+                          child: Image.file(
+                            File(snapshot.data!),
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      } else {
+                        return ClipOval(
+                          child: Image.asset(
+                            'assets/images/cow.jpg',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),

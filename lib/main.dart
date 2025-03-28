@@ -12,6 +12,7 @@ void main() async {
   await Firebase.initializeApp();
   final sharedPrefences = await SharedPreferences.getInstance();
 
+
   runApp(
     ProviderScope(
       overrides: [

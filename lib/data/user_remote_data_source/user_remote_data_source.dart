@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:moviebuddy/data/user_local_data_source/user_email_local_data_source.dart';
 import 'package:moviebuddy/data/user_local_data_source/user_id_local_data_source.dart';
 import 'package:moviebuddy/data/user_local_data_source/user_nickname_local_data_source.dart';
+import 'package:moviebuddy/data/user_local_data_source/user_photo_local_data_source.dart';
 import 'package:moviebuddy/data/user_model/user_model.dart';
 
 abstract class UserRemoteDataSource {
@@ -17,12 +18,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final UserIdLocalDataSource userIdLocalDataSource;
   final UserNicknameLocalDataSource userNicknameLocalDataSource;
   final UserEmailLocalDataSource userEmailLocalDataSource;
+  final UserPhotoLocalDataSource userPhotoLocalDataSource;
 
   UserRemoteDataSourceImpl({
     required this.firebaseFirestore,
     required this.userIdLocalDataSource,
     required this.userEmailLocalDataSource,
     required this.userNicknameLocalDataSource,
+    required this.userPhotoLocalDataSource,
   });
 
   @override
@@ -32,12 +35,15 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'email': user.email,
         'id': user.id,
         'nickname': user.nickname,
+        'photo': user.photo,
         'movieCollections': [],
       });
 
       await userIdLocalDataSource.saveUserId(user.id);
       await userEmailLocalDataSource.saveUserEmail(user.email);
       await userNicknameLocalDataSource.saveUserNickname(user.nickname);
+      await userPhotoLocalDataSource
+          .saveUserPhoto(user.photo ?? 'assets/images/cow.jpg');
     } catch (error, stackTrace) {
       if (kDebugMode) {
         print('Ошибка при сохранении пользователя: $error, $stackTrace');
@@ -59,6 +65,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         id: userData['id'],
         email: userData['email'],
         nickname: userData['nickname'],
+        photo: userData['photo'],
         moviesCollection: movieCollections,
       );
     } else {
@@ -90,8 +97,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
               .toList() ??
           [];
 
-      final index = movieCollections
-          .indexWhere((element) => element.name == playlist.name);
+      final index =
+          movieCollections.indexWhere((element) => element.id == playlist.id);
 
       if (index != -1) {
         movieCollections[index] = playlist;
@@ -112,22 +119,39 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         try {
           await userDocRef.update({
             'movieCollections': movieCollections.map((e) {
-              if (e.name == playlist.name) {
+              if (e.id == playlist.id) {
                 return {
+                  'id': e.id,
                   'name': e.name,
                   'movies': moviesJson,
                 };
               } else {
-                return e.toJson();
+                final json = e.toJson();
+                json['movies'] = json['movies']?.map((movie) {
+                  final movieJson = movie.toJson();
+                  return {
+                    'name': movieJson['name'],
+                    'description': movieJson['description'],
+                    'year': movieJson['year'],
+                    'poster': movie.poster.toJson(),
+                    'genres':
+                        movie.genres?.map((genre) => genre.toJson()).toList(),
+                    'rating': movie.rating?.toJson(),
+                  };
+                }).toList();
+                return json;
               }
             }).toList(),
           });
         } catch (e) {
+          if (kDebugMode) {
+            print('Ошибка при обновлении плейлиста: $e');
+          }
           throw Exception('Проблемы: $e');
         }
-      } else {}
-    } else {
-      throw Exception('Пользователь не найден');
+      } else {
+        throw Exception('Пользователь не найден');
+      }
     }
   }
 }

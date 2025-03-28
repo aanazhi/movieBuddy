@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moviebuddy/data/user_model/user_model.dart';
 import 'package:moviebuddy/provider/providers.dart';
+import 'package:uuid/uuid.dart';
 
 import '../widgets/app_bar.dart';
 
@@ -158,7 +159,10 @@ class Playlists extends ConsumerWidget {
           );
 
           if (newPlaylistName != null && newPlaylistName.isNotEmpty) {
+            const uuid = Uuid();
+            final id = uuid.v4();
             final newPlaylist = MovieCollection(
+              id: id,
               name: newPlaylistName,
               movies: [],
             );

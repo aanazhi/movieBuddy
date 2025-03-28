@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moviebuddy/data/user_repository/user_repository.dart';
-import 'package:moviebuddy/domain/login_use_case/login_register_use_case.dart';
 import 'package:moviebuddy/domain/user_entity/user_entity.dart';
 import 'package:moviebuddy/presentation/screens/enterance_screen.dart';
 import 'package:moviebuddy/presentation/screens/home_screen.dart';
@@ -20,7 +18,7 @@ class RegistationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
-    final loginUseCase = LoginRegisterUseCase(UserRepository());
+    final loginUseCase = ref.watch(loginRegisterProvider);
     final saveUsersOnRegProvider = ref.watch(saveUserProvider);
 
     return Scaffold(
@@ -228,6 +226,7 @@ class RegistationScreen extends ConsumerWidget {
                         id: id,
                         email: email,
                         nickname: nickname,
+                        photo: '',
                         movieCollections: [],
                       );
 

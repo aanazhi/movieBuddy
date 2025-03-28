@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moviebuddy/presentation/screens/home_screen.dart';
 import 'package:moviebuddy/presentation/screens/registration_screen.dart';
-
-import '../../data/user_repository/user_repository.dart';
-import '../../domain/login_use_case/login_register_use_case.dart';
+import 'package:moviebuddy/provider/providers.dart';
 
 class EnteranceScreen extends ConsumerWidget {
   final _emailController = TextEditingController();
@@ -17,7 +15,7 @@ class EnteranceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
-    final loginUseCase = LoginRegisterUseCase(UserRepository());
+    final loginUseCase = ref.watch(loginRegisterProvider);
 
     return Scaffold(
       appBar: AppBar(
