@@ -5,6 +5,7 @@ import 'package:moviebuddy/data/movie_model/movie_model.dart';
 abstract class MovieRemoteDataSource {
   Future<List<MovieModel>> getMovies();
   Future<List<MovieModel>> searchMovie(String query);
+  Future<List<MovieModel>> getFilteredMovies(Map<String, dynamic> params);
 }
 
 class MovieRemoteDataSorceImpl implements MovieRemoteDataSource {
@@ -15,6 +16,23 @@ class MovieRemoteDataSorceImpl implements MovieRemoteDataSource {
     required this.dio,
     required this.apiKey,
   });
+
+  @override
+  Future<List<MovieModel>> getFilteredMovies(
+      Map<String, dynamic> params) async {
+    final response = await dio.get(
+      '/movie',
+      queryParameters: params,
+      options: Options(headers: {'X-API-KEY': apiKey}),
+    );
+
+    if (response.statusCode == 200) {
+      return (response.data['docs'] as List)
+          .map((json) => MovieModel.fromJson(json))
+          .toList();
+    }
+    throw Exception('Ошибка фильтрации: ${response.statusCode}');
+  }
 
   @override
   Future<List<MovieModel>> getMovies() async {
@@ -74,6 +92,7 @@ class MovieRemoteDataSorceImpl implements MovieRemoteDataSource {
       final List<dynamic> docs = response.data['docs'];
       final List<MovieModel> movies = docs.map((json) {
         return MovieModel(
+          id: json['id'],
           name: json['name'],
           description: json['description'],
           year: json['year'],

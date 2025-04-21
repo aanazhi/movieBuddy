@@ -4,14 +4,16 @@ part 'movie_model.g.dart';
 
 @JsonSerializable()
 class MovieModel {
+  final dynamic id;
   final String? name;
   final String? description;
   final int? year;
-  final PosterModel poster;
+  final PosterModel? poster;
   final List<GenresModel>? genres;
   final RatingModel? rating;
 
   MovieModel({
+    required this.id,
     this.name,
     this.description,
     this.year,

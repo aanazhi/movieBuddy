@@ -19,7 +19,7 @@ class RegistationScreen extends ConsumerWidget {
     final colorsStyle = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
     final loginUseCase = ref.watch(loginRegisterProvider);
-    final saveUsersOnRegProvider = ref.watch(saveUserProvider);
+    //final saveUsersOnRegProvider = ref.watch(saveUserProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -222,6 +222,7 @@ class RegistationScreen extends ConsumerWidget {
 
                       const uuid = Uuid();
                       final id = uuid.v4();
+                      // ignore: unused_local_variable
                       final user = UserEntity(
                         id: id,
                         email: email,
@@ -230,7 +231,7 @@ class RegistationScreen extends ConsumerWidget {
                         movieCollections: [],
                       );
 
-                      await saveUsersOnRegProvider.call(user);
+                      // await saveUsersOnRegProvider.call(user);
 
                       Navigator.pushReplacement(
                         context,

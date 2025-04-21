@@ -16,10 +16,10 @@ RoomModel _$RoomModelFromJson(Map<String, dynamic> json) => RoomModel(
           .map((e) => MovieModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       swipes: (json['swipes'] as Map<String, dynamic>).map(
-        (k, e) =>
-            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
+        (k, e) => MapEntry(k, Map<String, bool>.from(e as Map)),
       ),
-      matchedMovie: json['matchedMovie'] as String?,
+      matchedMovieId: json['matchedMovieId'] as String?,
+      currentMovieIndex: (json['currentMovieIndex'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
@@ -28,5 +28,6 @@ Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
       'participants': instance.participants,
       'movies': instance.movies,
       'swipes': instance.swipes,
-      'matchedMovie': instance.matchedMovie,
+      'matchedMovieId': instance.matchedMovieId,
+      'currentMovieIndex': instance.currentMovieIndex,
     };

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,15 +20,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorsStyle = Theme.of(context).colorScheme;
-    final localDataSource = ref.watch(userIdLocalDataSourceProvider);
-    final userIdFuture = localDataSource.getUserId();
 
     return Scaffold(
-      body: FutureBuilder(
-        future: userIdFuture,
+      body: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final userId = snapshot.data;
+            final userId = FirebaseAuth.instance.currentUser?.uid;
             if (userId != null) {
               return IndexedStack(
                 index: _selectedIndex,

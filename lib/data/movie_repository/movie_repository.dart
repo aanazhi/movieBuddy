@@ -5,6 +5,7 @@ import 'package:moviebuddy/data/movie_remote_data_source/movie_remote_data_sourc
 
 abstract class MovieRepository {
   Future<List<MovieModel>> getMovies();
+  Future<MovieModel?> getMovieById(String movieId);
 }
 
 class MovieRepositoryImpl implements MovieRepository {
@@ -34,6 +35,27 @@ class MovieRepositoryImpl implements MovieRepository {
       final movies = await movieRemoteDataSorce.getMovies();
       await movieLocalDataSource.cashedMovies(movies);
       return movies;
+    }
+  }
+
+  @override
+  Future<MovieModel?> getMovieById(String movieId) async {
+    try {
+      final cachedMovies = await movieLocalDataSource.getCashedMovies();
+      final movie = cachedMovies.firstWhere((m) => m.id.toString() == movieId);
+      return movie;
+    } catch (e) {
+      try {
+        final movies = await movieRemoteDataSorce.getMovies();
+        final movie = movies.firstWhere((m) => m.id.toString() == movieId);
+        await movieLocalDataSource.cashedMovies(movies);
+        return movie;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error getting movie by ID: $e');
+        }
+        return null;
+      }
     }
   }
 }

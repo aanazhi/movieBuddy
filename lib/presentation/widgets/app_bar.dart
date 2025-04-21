@@ -15,27 +15,21 @@ class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
     final textStyle = Theme.of(context).textTheme;
 
     final localEmailDataSource = ref.watch(userEmailLocalDataSourceProvider);
-
     final localNicknameDataSource =
         ref.watch(userNicknameLocalDataSourceProvider);
 
-    final localPhotoDataSource = ref.watch(userPhotoLocalDataSourceProvider);
-    final userPhoto = localPhotoDataSource.getUserPhoto();
+    final userPhotoFuture =
+        ref.watch(userPhotoLocalDataSourceProvider).getUserPhoto();
 
     return AppBar(
       backgroundColor: colorsStyle.primary,
       title: Column(
         children: [
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text(
-                title,
-                style: textStyle.displayLarge,
-              ),
+              Text(title, style: textStyle.displayLarge),
               Container(
                 width: 45,
                 height: 45,
@@ -62,28 +56,11 @@ class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
                     );
                   },
                   child: FutureBuilder<String?>(
-                    future: userPhoto,
+                    future: userPhotoFuture,
                     builder: (context, snapshot) {
-                      print('snapshot -  ${snapshot.data}');
-                      if (snapshot.data != null && snapshot.hasData) {
-                        return ClipOval(
-                          child: Image.file(
-                            File(snapshot.data!),
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      } else {
-                        return ClipOval(
-                          child: Image.asset(
-                            'assets/images/cow.jpg',
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      }
+                      final photoPath = snapshot.data;
+                      print('photoPath - $photoPath');
+                      return _buildProfileImage(photoPath, size: 40);
                     },
                   ),
                 ),
@@ -93,6 +70,30 @@ class AppBurCustom extends ConsumerWidget implements PreferredSizeWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildProfileImage(String? photoPath, {double size = 100}) {
+    if (photoPath == null ||
+        photoPath.isEmpty ||
+        photoPath == 'assets/images/black.png') {
+      return ClipOval(
+        child: Image.asset(
+          'assets/images/black.png',
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: Image.file(
+          File(photoPath),
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
   }
 
   @override

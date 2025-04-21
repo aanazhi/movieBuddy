@@ -63,28 +63,35 @@ class ProfileScreen extends ConsumerWidget {
                           final imageState = ref.watch(imageProvider);
                           final imageNotifierState =
                               ref.watch(imageProvider.notifier);
+                          final localPhotoDataSource =
+                              ref.watch(userPhotoLocalDataSourceProvider);
 
                           if (kDebugMode) {
                             print('imageState  - $imageState');
                           }
 
-                          return InkWell(
-                            onTap: () async {
-                              await imageNotifierState.pickImage();
-                              await localPhotoDataSource
-                                  .saveUserPhoto(imageState!.path);
-                            },
-                            child: ClipOval(
-                                child: imageState != null
-                                    ? Image.file(
-                                        imageState,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        'assets/images/cow.jpg',
-                                        fit: BoxFit.cover,
-                                      )),
-                          );
+                          return FutureBuilder<String?>(
+                              future: localPhotoDataSource.getUserPhoto(),
+                              builder: (context, snapshot) {
+                                String? photoPath;
+                                if (imageState != null) {
+                                  photoPath = imageState.path;
+                                } else {
+                                  photoPath = snapshot.data;
+                                }
+
+                                return InkWell(
+                                    onTap: () async {
+                                      await imageNotifierState.pickImage();
+                                      if (imageState != null) {
+                                        await localPhotoDataSource
+                                            .saveUserPhoto(imageState.path);
+                                      }
+                                    },
+                                    child: ClipOval(
+                                      child: _buildProfileImage(photoPath),
+                                    ));
+                              });
                         },
                       ),
                     ),
@@ -240,6 +247,22 @@ class ProfileScreen extends ConsumerWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+Widget _buildProfileImage(String? photoPath) {
+  if (photoPath == null ||
+      photoPath.isEmpty ||
+      photoPath == 'assets/images/black.png') {
+    return Image.asset(
+      'assets/images/black.png',
+      fit: BoxFit.cover,
+    );
+  } else {
+    return Image.file(
+      File(photoPath),
+      fit: BoxFit.cover,
     );
   }
 }

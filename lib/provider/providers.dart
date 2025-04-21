@@ -9,6 +9,7 @@ import 'package:moviebuddy/data/image_repository/image_repository.dart';
 import 'package:moviebuddy/data/movie_local_data_source/movie_local_data_source.dart';
 import 'package:moviebuddy/data/movie_model/movie_model.dart';
 import 'package:moviebuddy/data/movie_remote_data_source/movie_remote_data_source.dart';
+import 'package:moviebuddy/data/room_model/room_model.dart';
 import 'package:moviebuddy/data/serial_local_data_source/serial_local_data_source.dart';
 import 'package:moviebuddy/data/serial_model/serial_model.dart';
 import 'package:moviebuddy/data/serial_remote_data_source/serial_remote_data_source.dart';
@@ -22,26 +23,40 @@ import 'package:moviebuddy/data/user_remote_data_source/user_remote_data_source.
 import 'package:moviebuddy/data/user_repository/user_repository.dart';
 import 'package:moviebuddy/domain/image_use_case/image_use_case.dart';
 import 'package:moviebuddy/domain/login_use_case/login_register_use_case.dart';
-import 'package:moviebuddy/domain/movie_repository/movie_repository.dart';
-import 'package:moviebuddy/domain/room_repository/room_repository.dart';
+import 'package:moviebuddy/data/movie_repository/movie_repository.dart';
+import 'package:moviebuddy/data/room_repository/room_repository.dart';
 import 'package:moviebuddy/domain/switch_entity/switch_entity.dart';
+import 'package:moviebuddy/domain/switch_state/switch_state.dart';
 import 'package:moviebuddy/domain/user_use_case/add_movies_in_playlist.dart';
 import 'package:moviebuddy/domain/user_use_case/add_playlist_use_case.dart';
 import 'package:moviebuddy/domain/user_use_case/get_user_use_case.dart';
 import 'package:moviebuddy/domain/user_use_case/save_user_use_case.dart';
-import 'package:moviebuddy/domain/serial_repository/serial_repository.dart';
-import 'package:moviebuddy/provider/state_notifier.dart';
+import 'package:moviebuddy/data/serial_repository/serial_repository.dart';
+import 'package:moviebuddy/provider/state_notifier/image_notifier.dart';
+import 'package:moviebuddy/provider/state_notifier/room_controller.dart';
+import 'package:moviebuddy/provider/state_notifier/swipe_notifier.dart';
+import 'package:moviebuddy/provider/state_notifier/switch_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final userRepositoryProvider = Provider<DatabaseRepository>((ref) {
   final userRemoteDataSource = UserRemoteDataSourceImpl(
     firebaseFirestore: ref.watch(firebaseFirestoreProvider),
-    userIdLocalDataSource: ref.watch(userIdLocalDataSourceProvider),
+    //userIdLocalDataSource: ref.watch(userIdLocalDataSourceProvider),
     userEmailLocalDataSource: ref.watch(userEmailLocalDataSourceProvider),
     userNicknameLocalDataSource: ref.watch(userNicknameLocalDataSourceProvider),
     userPhotoLocalDataSource: ref.watch(userPhotoLocalDataSourceProvider),
   );
   return DatabaseRepositoryImpl(userRemoteDataSource);
+});
+
+final userRemoteProvider = Provider<UserRemoteDataSource>((ref) {
+  return UserRemoteDataSourceImpl(
+      firebaseFirestore: ref.watch(firebaseFirestoreProvider),
+      //userIdLocalDataSource: ref.watch(userIdLocalDataSourceProvider),
+      userEmailLocalDataSource: ref.watch(userEmailLocalDataSourceProvider),
+      userNicknameLocalDataSource:
+          ref.watch(userNicknameLocalDataSourceProvider),
+      userPhotoLocalDataSource: ref.watch(userPhotoLocalDataSourceProvider));
 });
 
 final firebaseFirestoreProvider = Provider<FirebaseFirestore>((ref) {
@@ -51,8 +66,12 @@ final firebaseFirestoreProvider = Provider<FirebaseFirestore>((ref) {
 final userProvider = Provider<UserRepository>((ref) {
   final firebaseAuth = ref.watch(firebaseProvider);
   final userToken = ref.watch(userTokenLocalDataSource);
+  final userRemoteDataSource = ref.watch(userRemoteProvider);
   return UserRepositoryImpl(
-      auth: firebaseAuth, userTokenLocalDataSource: userToken);
+    auth: firebaseAuth,
+    userTokenLocalDataSource: userToken,
+    userRemoteDataSource: userRemoteDataSource,
+  );
 });
 
 final loginRegisterProvider = Provider<LoginRegisterUseCase>((ref) {
@@ -77,7 +96,7 @@ final getUserProvider = Provider<GetUserUseCase>((ref) {
 final getUserAsyncProvider =
     FutureProvider.family<UserModel, String>((ref, userId) async {
   final getUserUseCase = ref.watch(getUserProvider);
-  return getUserUseCase.call(userId);
+  return await getUserUseCase.call(userId);
 });
 
 final addPlaylistProvider = Provider<AddPlaylistUseCase>((ref) {
@@ -105,10 +124,10 @@ final apiKeyProvider = Provider<String>((ref) {
 final sharedPreferencesProvider =
     Provider<SharedPreferences>((ref) => throw UnimplementedError());
 
-final userIdLocalDataSourceProvider = Provider<UserIdLocalDataSource>((ref) {
-  return UserIdLocalDataSourceImpl(
-      sharedPreferences: ref.watch(sharedPreferencesProvider));
-});
+// final userIdLocalDataSourceProvider = Provider<UserIdLocalDataSource>((ref) {
+//   return UserIdLocalDataSourceImpl(
+//       sharedPreferences: ref.watch(sharedPreferencesProvider));
+// });
 
 final userEmailLocalDataSourceProvider =
     Provider<UserEmailLocalDataSource>((ref) {
@@ -118,8 +137,30 @@ final userEmailLocalDataSourceProvider =
 
 final userPhotoLocalDataSourceProvider =
     Provider<UserPhotoLocalDataSource>((ref) {
-  return UserPhotoLocalDataSourceImpl(
-      sharedPreferences: ref.watch(sharedPreferencesProvider));
+  final sharedPreferences = ref.watch(sharedPreferencesProvider);
+  return UserPhotoLocalDataSourceImpl(sharedPreferences: sharedPreferences);
+});
+
+final filterParamsProvider = StateProvider<Map<String, dynamic>>((ref) {
+  return {
+    'page': 1,
+    'limit': 10,
+    'selectFields': [
+      'name',
+      'description',
+      'year',
+      'rating',
+      'genres',
+      'poster'
+    ],
+  };
+});
+
+final filteredMoviesProvider =
+    FutureProvider.autoDispose<List<MovieModel>>((ref) {
+  final params = ref.watch(filterParamsProvider);
+  final dataSource = ref.watch(movieRemoteDataSourceProvider);
+  return dataSource.getFilteredMovies(params);
 });
 
 final userTokenLocalDataSource = Provider<UserTokenLocalDataSource>((ref) {
@@ -155,6 +196,12 @@ final movieRepositoryProvider = Provider<MovieRepository>((ref) {
 
 final movieProvider = FutureProvider<List<MovieModel>>((ref) async {
   return ref.watch(movieRepositoryProvider).getMovies();
+});
+
+final movieByIdProvider =
+    FutureProvider.family<MovieModel?, String>((ref, movieId) async {
+  final repository = ref.watch(movieRepositoryProvider);
+  return repository.getMovieById(movieId);
 });
 
 final serialRemoteDataSourceProvider = Provider<SerialRemoteDataSource>((ref) {
@@ -220,3 +267,55 @@ final roomRepositoryProvider = Provider<RoomRepository>((ref) {
   final firebase = ref.watch(firebaseFirestoreProvider);
   return RoomRepositoryImpl(firebaseFirestore: firebase);
 });
+
+final roomControllerProvider = StateNotifierProvider.autoDispose
+    .family<RoomController, AsyncValue<RoomModel>, String>((ref, code) {
+  return RoomController(
+    ref.watch(roomRepositoryProvider),
+    code,
+    ref.watch(firebaseProvider),
+  );
+});
+
+final swipeProvider = StateNotifierProvider.autoDispose
+    .family<SwipeNotifier, SwipeState, String>((ref, code) {
+  ref.keepAlive();
+  return SwipeNotifier(
+    ref.watch(roomRepositoryProvider),
+    code,
+    ref.watch(firebaseProvider),
+  );
+});
+
+final userRProvider = FutureProvider<UserModel>((ref) async {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+  print('айдишник: ${userId}');
+  final remoteDataSource = ref.watch(userRemoteProvider);
+
+  if (userId != null) {
+    try {
+      return await remoteDataSource.getUser(userId);
+    } catch (e) {
+      print("Ошибка при получении данных пользователя: $e");
+
+      throw Exception("Failed to load user data: $e");
+    }
+  } else {
+    print("Пользователь не залогинен");
+    throw Exception("Пользователь не залогинен");
+  }
+});
+
+final userPlaylistsProvider =
+    FutureProvider<List<MovieCollection>>((ref) async {
+  final user = await ref.watch(userRProvider.future);
+  return user.moviesCollection ?? [];
+});
+
+final movieRepProvider =
+    FutureProvider.family<MovieModel?, String>((ref, movieId) async {
+  final repository = ref.watch(movieRepositoryProvider);
+  return repository.getMovieById(movieId);
+});
+
+final currentIndexProvider = StateProvider<int>((ref) => 0);

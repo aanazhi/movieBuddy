@@ -1,4 +1,4 @@
-import 'package:moviebuddy/provider/state_notifier.dart';
+import 'package:moviebuddy/provider/state_notifier/switch_notifier.dart';
 
 abstract class SwitchRepository {
   void toggleFirstSwitch();

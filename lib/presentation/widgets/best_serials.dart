@@ -26,20 +26,12 @@ class BestSerials extends ConsumerWidget {
                     left: 20,
                   ),
                   child: SizedBox(
-                    height: 190,
-                    width: 130,
-                    child: serial.poster?.url != null
-                        ? Image.network(
-                            serial.poster.url,
-                            fit: BoxFit.cover,
-                          )
-                        : Center(
-                            child: Text(
-                              'Нет картинки',
-                              style: textStyle.bodyMedium,
-                            ),
-                          ),
-                  ),
+                      height: 190,
+                      width: 130,
+                      child: Image.network(
+                        serial.poster.url,
+                        fit: BoxFit.cover,
+                      )),
                 );
               },
             ));
@@ -49,9 +41,11 @@ class BestSerials extends ConsumerWidget {
           color: colorsStyle.secondary,
         ),
       ),
-      error: (Object error, StackTrace stackTrace) => Text(
-        'Что-то пошло не так',
-        style: textStyle.bodyMedium,
+      error: (Object error, StackTrace stackTrace) => Center(
+        child: Text(
+          'Что-то пошло не так',
+          style: textStyle.bodyMedium,
+        ),
       ),
     );
   }

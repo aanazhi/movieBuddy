@@ -28,6 +28,7 @@ class Playlists extends ConsumerWidget {
       backgroundColor: colorsStyle.primary,
       body: RefreshIndicator(
         onRefresh: () async {
+          // ignore: unused_result
           ref.refresh(getUserAsyncProvider(userId!));
         },
         child: getUserAsyncValue.when(
@@ -74,7 +75,7 @@ class Playlists extends ConsumerWidget {
                           itemCount: playlist.movies!.length,
                           itemBuilder: (context, index) {
                             final movie = playlist.movies![index];
-                            final posterUrl = movie.poster.url;
+                            final posterUrl = movie.poster!.url;
 
                             return posterUrl != null && posterUrl.isNotEmpty
                                 ? Image.network(
@@ -96,10 +97,13 @@ class Playlists extends ConsumerWidget {
               );
             }
           },
-          error: (error, _) {
-            return Text(
-              'Ошибка при загрузке плейлистов',
-              style: textStyle.bodyMedium,
+          error: (error, stackTrace) {
+            print('Playlists error - $error, stackTrace - $stackTrace');
+            return Center(
+              child: Text(
+                'Ошибка при загрузке плейлистов',
+                style: textStyle.bodyMedium,
+              ),
             );
           },
           loading: () {
@@ -168,6 +172,7 @@ class Playlists extends ConsumerWidget {
             );
             final addPlaylistUseCase = ref.read(addPlaylistProvider);
             await addPlaylistUseCase.call(userId!, newPlaylist);
+            // ignore: unused_result
             ref.refresh(getUserAsyncProvider(userId!));
           }
         },

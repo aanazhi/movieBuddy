@@ -1,4 +1,4 @@
-import 'package:moviebuddy/domain/switch_repository/switch_repository.dart';
+import 'package:moviebuddy/data/switch_repository/switch_repository.dart';
 
 abstract class SwitchUseCase {
   void toggleFirstSwitch();

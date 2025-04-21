@@ -7,10 +7,13 @@ part of 'movie_model.dart';
 // **************************************************************************
 
 MovieModel _$MovieModelFromJson(Map<String, dynamic> json) => MovieModel(
+      id: json['id'],
       name: json['name'] as String?,
       description: json['description'] as String?,
       year: (json['year'] as num?)?.toInt(),
-      poster: PosterModel.fromJson(json['poster'] as Map<String, dynamic>),
+      poster: json['poster'] == null
+          ? null
+          : PosterModel.fromJson(json['poster'] as Map<String, dynamic>),
       genres: (json['genres'] as List<dynamic>?)
           ?.map((e) => GenresModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -21,6 +24,7 @@ MovieModel _$MovieModelFromJson(Map<String, dynamic> json) => MovieModel(
 
 Map<String, dynamic> _$MovieModelToJson(MovieModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'description': instance.description,
       'year': instance.year,
